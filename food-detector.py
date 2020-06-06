@@ -1,3 +1,5 @@
+import argparse
+
 import os
 
 import numpy as np
@@ -17,7 +19,7 @@ from gluoncv.data import batchify
 ctx = [mx.cpu()]
 
 
-def predict_food(im_fname, threshold=0.5, print_outputs=True):
+def predict_food(im_fname, threshold=0.5, print_outputs=False):
 
     net = model_zoo.get_model('yolo3_darknet53_coco', pretrained=True, ctx=ctx)
 
@@ -65,17 +67,7 @@ def predict_food(im_fname, threshold=0.5, print_outputs=True):
 
     bowl_boxes = bboxes_np[bowl_mask.ravel(), :]
 
-    if (len(bowl_boxes) == 0):
-        box_ids, scores, bboxes = net.forward(x)
-
-        utils.viz.plot_bbox(orig_img,
-                            bboxes[0],
-                            scores[0],
-                            box_ids[0],
-                            class_names=base_classes,
-                            thresh=0.4)
-
-    else:
+    if (len(bowl_boxes) > 0):
         bowl_images = [orig_img[int(box[1]): int(box[3]), int(box[0]): int(box[2])] for box in bowl_boxes.tolist()]
 
         bowl_batch_img = batchify.Stack()([transform_fn(mx.nd.array(img)) for img in bowl_images]).copyto(ctx[0])
@@ -96,30 +88,45 @@ def predict_food(im_fname, threshold=0.5, print_outputs=True):
         scores = np.concatenate((scores, food_scores.asnumpy().reshape(-1, 1)), axis=0)
         bboxes = np.concatenate((bboxes, bowl_boxes.reshape(-1, 4)), axis=0)
 
-        if (print_outputs):
-            confident_mask = (scores >= threshold)
-            confident_classes = box_ids[confident_mask]
-            confident_scores = scores[confident_mask]
-            confident_boxes = bboxes[confident_mask.ravel()]
+    else:
+        bboxes = bboxes[0].asnumpy()
+        scores = scores[0].asnumpy()
+        box_ids = box_ids[0].asnumpy()
 
-            for i in range(len(confident_boxes)):
-                print(f"{all_classes[int(confident_classes[i])]:10} \t {confident_scores[i]:10:.5f}\t{confident_boxes[i]}")
-            
+    if (print_outputs):
+        confident_mask = (scores >= threshold)
+        confident_classes = box_ids[confident_mask]
+        confident_scores = scores[confident_mask]
+        confident_boxes = bboxes[confident_mask.ravel()]
 
-        utils.viz.plot_bbox(orig_img,
-                            bboxes,
-                            scores,
-                            box_ids,
-                            class_names=all_classes,
-                            thresh=threshold)
+        for i in range(len(confident_boxes)):
+            print(f"{all_classes[int(confident_classes[i])]:10} \t {confident_scores[i]:.5f}\t{confident_boxes[i]}")
+        
+
+    utils.viz.plot_bbox(orig_img,
+                        bboxes,
+                        scores,
+                        box_ids,
+                        class_names=all_classes,
+                        thresh=threshold)
 
     plt.show()
 
 
 if __name__ == '__main__':
-    test_images_folder = './test_images/'
+    parser = argparse.ArgumentParser(description="Predict food objects in the image")
+    parser.add_argument("-f", "--file", help="default flag to read from image file", metavar="<path to file>")
+    parser.add_argument("-u", "--url", help="download image fro URL and read it", metavar="<url of image>")
+    parser.add_argument("-p", "--print", help="print prediction outputs", action="store_true")
+    parser.add_argument("-t", "--threshold", help="set threshold for prediction score", default=0.5, type=float, metavar="<float number>")
 
-    im_fname = 'test0.jpg'
-    im_fname = os.path.join(test_images_folder, im_fname)
+    args = parser.parse_args()
 
-    predict_food(im_fname)
+    if args.file:
+        predict_food(args.file, threshold=args.threshold, print_outputs=args.print)
+
+    if args.url:
+        im_address = args.url
+        im_fname = utils.download(im_address, path='image.jpg', overwrite=True)
+
+        predict_food(im_fname, threshold=args.threshold, print_outputs=args.print)
