@@ -110,7 +110,8 @@ def predict_food(im_fname, threshold=0.5, print_outputs=False):
                         class_names=all_classes,
                         thresh=threshold)
 
-    plt.show()
+    plt.rc('figure', figsize=(20,20))
+    plt.savefig('prediction.jpg', dpi=300)
 
 
 if __name__ == '__main__':
