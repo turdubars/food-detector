@@ -17,7 +17,8 @@ from gluoncv.data import batchify
 ctx = [mx.cpu()]
 
 
-def predict_food(im_fname):
+def predict_food(im_fname, threshold=0.5, print_outputs=True):
+
     net = model_zoo.get_model('yolo3_darknet53_coco', pretrained=True, ctx=ctx)
 
     base_classes = ['bowl',
@@ -58,7 +59,7 @@ def predict_food(im_fname):
 
     box_ids_np, scores_np, bboxes_np = box_ids[0].asnumpy(), scores[0].asnumpy(), bboxes[0].asnumpy()
 
-    bowl_mask = ((box_ids_np == 0) & (scores_np > 0.5))
+    bowl_mask = ((box_ids_np == 0) & (scores_np > threshold))
 
     bowl_ids = np.where(bowl_mask)
 
@@ -87,21 +88,30 @@ def predict_food(im_fname):
 
         all_classes = base_classes + food_classes
 
-        box_ids = mx.nd.array(np.delete(box_ids_np, bowl_ids[0], axis=0)).copyto(ctx[0])
-        scores = mx.nd.array(np.delete(scores_np, bowl_ids[0], axis=0)).copyto(ctx[0])
-        bboxes = mx.nd.array(np.delete(bboxes_np, bowl_ids[0], axis=0)).copyto(ctx[0])
+        box_ids = np.delete(box_ids_np, bowl_ids[0], axis=0)
+        scores = np.delete(scores_np, bowl_ids[0], axis=0)
+        bboxes = np.delete(bboxes_np, bowl_ids[0], axis=0)
 
-        bowl_boxes = mx.nd.array(bowl_boxes).copyto(ctx[0])
+        box_ids = np.concatenate((box_ids, food_labels.asnumpy().reshape(-1, 1)), axis=0)
+        scores = np.concatenate((scores, food_scores.asnumpy().reshape(-1, 1)), axis=0)
+        bboxes = np.concatenate((bboxes, bowl_boxes.reshape(-1, 4)), axis=0)
 
-        box_ids = mx.nd.concat(box_ids, food_labels.reshape(-1, 1), dim=0)
-        scores = mx.nd.concat(scores, food_scores.reshape(-1, 1), dim=0)
-        bboxes = mx.nd.concat(bboxes, bowl_boxes.reshape(-1, 4), dim=0)
+        if (print_outputs):
+            confident_mask = (scores >= threshold)
+            confident_classes = box_ids[confident_mask]
+            confident_scores = scores[confident_mask]
+            confident_boxes = bboxes[confident_mask.ravel()]
+
+            for i in range(len(confident_boxes)):
+                print(f"{all_classes[int(confident_classes[i])]:10} \t {confident_scores[i]:10:.5f}\t{confident_boxes[i]}")
+            
 
         utils.viz.plot_bbox(orig_img,
                             bboxes,
                             scores,
                             box_ids,
-                            class_names=all_classes)
+                            class_names=all_classes,
+                            thresh=threshold)
 
     plt.show()
 
