@@ -9,7 +9,7 @@
 
 A custom model to detect local food using two CNN models YOLOv3 and custom ResNet-50.
 YOLOv3 model was pretrained on COCO Dataset and ResNet-50 was pretrained on Imagenet and finetuned for the custom dataset of local food that was manually collected from Google Images with Python and Javascript.
-
+![Model structure](readme/structure.png)
 ## Installation
 ### Docker
 If you don't want to deal with packages, install with Docker Compose
