@@ -26,6 +26,7 @@ pip install -r requirements.txt
 To predict food in the image file
 ```bash
 python food-detector --file <path to image file>
+python food-detector --file test_images/test0.jpg
 ```
 To predict food in the image with images's url
 ```bash
