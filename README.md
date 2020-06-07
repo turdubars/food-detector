@@ -42,7 +42,7 @@ To predict food in an image from internet use -u or --url flag
 ```bash
 python food-detector.py --url <url of image>
 ```
-
+-----------
 
 **Note that during the first run the application automatically will download YOLOv3 parameters**
 
