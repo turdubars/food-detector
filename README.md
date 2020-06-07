@@ -46,7 +46,7 @@ python food-detector.py --url <url of image>
 
 **Note that during the first run the application automatically will download YOLOv3 parameters**
 
-*By default the application saves images in 'predictions' folder*
+*By default the application saves images in 'predictions' folder as 'prediction.jpg' file*
 
 There are other flags to print outputs (-p), to save predicted images (-w), to set a threshold (-t)\
 Run -h or --help to get the additional information
