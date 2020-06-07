@@ -102,7 +102,7 @@ def predict_food(im_fname, output_filename, threshold=0.5, print_outputs=False):
         for i in range(len(confident_boxes)):
             print(f"{all_classes[int(confident_classes[i])]:10} \t {confident_scores[i]:.5f}\t{confident_boxes[i]}")
         
-
+    
     utils.viz.plot_bbox(orig_img,
                         bboxes,
                         scores,
@@ -111,7 +111,10 @@ def predict_food(im_fname, output_filename, threshold=0.5, print_outputs=False):
                         thresh=threshold)
 
     # plt.rc('figure', figsize=(20,20))
-    plt.savefig(f"./predictions/{output_filename}", dpi=300)
+    fig = plt.gcf()
+    fig.set_size_inches(15, 10)
+    plt.axis('off')
+    plt.savefig(f"./predictions/{output_filename}", dpi=300, bbox_inches='tight', pad_inches=0)
 
 
 if __name__ == '__main__':

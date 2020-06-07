@@ -4,6 +4,3 @@ notebooks/Test/
 
 # VSCode
 .vscode/
-
-# Prediction outputs
-predictions/
