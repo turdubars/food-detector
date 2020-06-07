@@ -37,14 +37,17 @@ For example:
 ```bash
 python food-detector.py --file test_images/test0.jpg
 ```
-**Note that during the first run the application automatically will download YOLOv3 parameters**
-
-*By default the application saves images in 'predictions' folder*
 
 To predict food in an image from internet use -u or --url flag
 ```bash
 python food-detector.py --url <url of image>
 ```
+
+
+**Note that during the first run the application automatically will download YOLOv3 parameters**
+
+*By default the application saves images in 'predictions' folder*
+
 There are other flags to print outputs (-p), to save predicted images (-w), to set a threshold (-t)\
 Run -h or --help to get the additional information
 ```bash
