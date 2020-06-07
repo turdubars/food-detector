@@ -41,10 +41,10 @@ By default the application saves images with prediction in 'predictions' folder
 
 To predict food in the image from internet use -u or --url flag
 ```bash
-python food-detector --url <url of image>
+python food-detector.py --url <url of image>
 ```
 There are other flags to print outputs (-p), to save predicted images (-w), to set a threshold (-t)\
 Run -h or --help to get the additional information
 ```bash
-python food-detector --help
+python food-detector.py --help
 ```
