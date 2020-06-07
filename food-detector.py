@@ -19,7 +19,7 @@ from gluoncv.data import batchify
 ctx = [mx.cpu()]
 
 
-def predict_food(im_fname, threshold=0.5, print_outputs=False):
+def predict_food(im_fname, output_filename, threshold=0.5, print_outputs=False):
 
     net = model_zoo.get_model('yolo3_darknet53_coco', pretrained=True, ctx=ctx)
 
@@ -110,24 +110,25 @@ def predict_food(im_fname, threshold=0.5, print_outputs=False):
                         class_names=all_classes,
                         thresh=threshold)
 
-    plt.rc('figure', figsize=(20,20))
-    plt.savefig('prediction.jpg', dpi=300)
+    # plt.rc('figure', figsize=(20,20))
+    plt.savefig(f"./predictions/{output_filename}", dpi=300)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Predict food objects in the image")
     parser.add_argument("-f", "--file", help="default flag to read from image file", metavar="<path to file>")
     parser.add_argument("-u", "--url", help="download image fro URL and read it", metavar="<url of image>")
-    parser.add_argument("-p", "--print", help="print prediction outputs", action="store_true")
+    parser.add_argument("-w", "--write", default="prediction.jpg", help="save image, default='prediction.jpg'", metavar="<filename>")
     parser.add_argument("-t", "--threshold", help="set threshold for prediction score", default=0.5, type=float, metavar="<float number>")
+    parser.add_argument("-p", "--print", help="print prediction outputs", action="store_true")
 
     args = parser.parse_args()
 
     if args.file:
-        predict_food(args.file, threshold=args.threshold, print_outputs=args.print)
+        predict_food(args.file, output_filename=args.write, threshold=args.threshold, print_outputs=args.print)
 
     if args.url:
         im_address = args.url
         im_fname = utils.download(im_address, path='image.jpg', overwrite=True)
 
-        predict_food(im_fname, threshold=args.threshold, print_outputs=args.print)
+        predict_food(im_fname, output_filename=args.write, threshold=args.threshold, print_outputs=args.print)
