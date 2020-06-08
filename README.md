@@ -8,7 +8,7 @@
 
 
 A custom model to detect local food using two convolutional neural networks: YOLOv3 and ResNet-50. \
-YOLOv3 model was pretrained on COCO Dataset and ResNet-50 was pretrained on Imagenet and finetuned for the custom dataset of local food that was manually collected from Google Images with Python and Javascript.
+YOLOv3 model was pretrained on COCO Dataset and ResNet-50 was pretrained on Imagenet and finetuned for the custom dataset of local food that was collected from Google Images with Python and Javascript.
 ![Model structure](readme/structure.png)
 ## Installation
 ### Docker
