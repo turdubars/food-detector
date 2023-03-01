@@ -1,5 +1,5 @@
 imutils==0.5.3
 gluoncv==0.7.0
-mxnet==1.6.0
+mxnet==1.9.1
 opencv-python==4.2.0.34
 requests==2.23.0
